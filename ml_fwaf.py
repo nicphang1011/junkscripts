@@ -34,7 +34,7 @@ def loadFile(name):
 
 
 
-def main(goodQueries, badQueries, internalQueries):
+def train_and_monitor(goodQueries, badQueries, internalQueries, netint):
     #Data prep
     badQueries = list(set(badQueries))
     goodQueries = list(set(goodQueries))
@@ -76,15 +76,27 @@ def main(goodQueries, badQueries, internalQueries):
     print("F1-Score: %f" % metrics.f1_score(y_test, predicted))
     print("AUC: %f" % auc)
 
+    cap = pyshark.LiveCapture(netint, display_filter='http')
+    for pkt in cap:
+        uri = str(pkt.http.request_full_uri).split()
+        uri = uri[6:].join()
+        if lgs.predict(uri) == 1:
+            print('Anomalous')
+        else:
+            continue
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--pcap', metavar='<pcap file name>', help='pcap file to parse')
     parser.add_argument('--goodqueries', metavar='<good queries file name>', help='text file for good queries')
     parser.add_argument('--malqueries', metavar='<malicious queries file name>', help='text file for malicious queries')
+    parser.add_argument('--netint', metavar='<network interface to monitor traffic on>', default='eth0')
     args = parser.parse_args()
 
     internalQueries = packet_uri_extraction(args.pcap)
     badQueries = loadFile(args.malqueries)
     goodQueries = loadFile(args.goodqueries)
-    main(goodQueries, badQueries, internalQueries)
+    netint = args.netint
+    train_and_monitor(goodQueries, badQueries, internalQueries, netint)
