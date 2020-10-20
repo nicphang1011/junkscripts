@@ -7,3 +7,4 @@ This is where I keep all the scripts that I wrote as helper functions that could
       - Example: ./tcp_stream_extraction.py /tmp/test.pcap')
       - Note: Can be adapted for UDP streams
   
+2. ml_fwaf.py (Used to create a model to detect malicious web queries within internal traffic)
