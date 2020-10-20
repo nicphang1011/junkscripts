@@ -17,7 +17,7 @@ def packet_uri_extraction(pcap_file_in):
         uri = uri[6:].join()
         uri_list.append(uri)
     return uri_list
-
+#Need to edit the uri_list to only include unique strings
 
 
 def loadFile(name):
